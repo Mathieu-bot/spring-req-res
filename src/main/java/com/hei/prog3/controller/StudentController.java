@@ -14,11 +14,6 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping("/welcome")
-    public String welcome(@RequestParam("name") String name) {
-        return "Welcome " + name;
-    }
-
     @PostMapping("/students")
     public String addStudents(@RequestBody List<Student> newStudents) {
         studentService.addStudents(newStudents);
