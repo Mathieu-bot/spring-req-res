@@ -16,8 +16,12 @@ public class StudentController {
     }
 
     @PostMapping("/students")
-    public List<Student> addStudents(@RequestBody List<Student> newStudents) {
+    public String addStudents(@RequestBody List<Student> newStudents) {
         studentRepository.addAll(newStudents);
-        return studentRepository.findAll();
+        StringBuilder names = new StringBuilder();
+        for (Student student : studentRepository.findAll()) {
+            names.append(student.getFirstName()).append(" ").append(student.getLastName()).append("\n");
+        }
+        return names.toString();
     }
 }
