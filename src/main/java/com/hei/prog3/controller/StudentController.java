@@ -35,11 +35,21 @@ public class StudentController {
     }
 
     @GetMapping("/students")
-    public String getStudents(@RequestHeader("Accept") String acceptHeader) {
-        if ("text/plain".equals(acceptHeader)) {
-            return studentService.getStudentsNamesAsString();
-        } else {
-            return "Not supported format";
+    public ResponseEntity<?> getStudents(@RequestHeader(value = "Accept", required = false) String acceptHeader) {
+        try {
+            if (acceptHeader == null || acceptHeader.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Accept header is required");
+            }
+
+            if (!"text/plain".equals(acceptHeader) && !"application/json".equals(acceptHeader)) {
+                return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Unsupported media type: " + acceptHeader);
+            }
+
+            List<Student> students = studentService.getAllStudents();
+            return ResponseEntity.ok().body(students);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing the request");
         }
     }
 }
