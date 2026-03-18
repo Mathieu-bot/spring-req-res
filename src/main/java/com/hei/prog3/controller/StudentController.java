@@ -24,4 +24,17 @@ public class StudentController {
         }
         return names.toString();
     }
+
+    @GetMapping("/students")
+    public String getStudents(@RequestHeader("Accept") String acceptHeader) {
+        if ("text/plain".equals(acceptHeader)) {
+            StringBuilder names = new StringBuilder();
+            for (Student student : studentRepository.findAll()) {
+                names.append(student.getFirstName()).append(" ").append(student.getLastName()).append("\n");
+            }
+            return names.toString();
+        } else {
+            return "Not supported format";
+        }
+    }
 }
