@@ -37,8 +37,8 @@ public class StudentController {
     @GetMapping("/students")
     public ResponseEntity<?> getStudents(@RequestHeader(value = "Accept", required = false) String acceptHeader) {
         try {
-            if (acceptHeader == null || acceptHeader.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body("Accept header is required");
+            if (acceptHeader == null || acceptHeader.trim().isEmpty() || "*/*".equals(acceptHeader)) {
+                return ResponseEntity.badRequest().body("Accept header is required and must be text/plain or application/json");
             }
 
             if (!"text/plain".equals(acceptHeader) && !"application/json".equals(acceptHeader)) {
