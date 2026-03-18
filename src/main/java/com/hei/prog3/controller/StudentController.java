@@ -1,14 +1,18 @@
 package com.hei.prog3.controller;
 
 import com.hei.prog3.entity.Student;
-import com.hei.prog3.repository.StudentRepository;
+import com.hei.prog3.service.StudentService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 public class StudentController {
-    private final StudentRepository studentRepository = new StudentRepository();
+    private final StudentService studentService;
+
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
+    }
 
     @GetMapping("/welcome")
     public String welcome(@RequestParam("name") String name) {
@@ -17,22 +21,14 @@ public class StudentController {
 
     @PostMapping("/students")
     public String addStudents(@RequestBody List<Student> newStudents) {
-        studentRepository.addAll(newStudents);
-        StringBuilder names = new StringBuilder();
-        for (Student student : studentRepository.findAll()) {
-            names.append(student.getFirstName()).append(" ").append(student.getLastName()).append("\n");
-        }
-        return names.toString();
+        studentService.addStudents(newStudents);
+        return studentService.getStudentsNamesAsString();
     }
 
     @GetMapping("/students")
     public String getStudents(@RequestHeader("Accept") String acceptHeader) {
         if ("text/plain".equals(acceptHeader)) {
-            StringBuilder names = new StringBuilder();
-            for (Student student : studentRepository.findAll()) {
-                names.append(student.getFirstName()).append(" ").append(student.getLastName()).append("\n");
-            }
-            return names.toString();
+            return studentService.getStudentsNamesAsString();
         } else {
             return "Not supported format";
         }
