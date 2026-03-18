@@ -16,14 +16,6 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping("/welcome")
-    public ResponseEntity<String> welcome(@RequestParam(value = "name", required = false) String name) {
-        if (name == null || name.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Parameter 'name' is required");
-        }
-        return ResponseEntity.ok("Welcome " + name);
-    }
-
     @PostMapping("/students")
     public ResponseEntity<?> addStudents(@RequestBody List<Student> newStudents) {
         try {
