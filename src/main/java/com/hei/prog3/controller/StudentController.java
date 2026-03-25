@@ -2,35 +2,31 @@ package com.hei.prog3.controller;
 
 import com.hei.prog3.entity.Student;
 import com.hei.prog3.service.StudentService;
+import com.hei.prog3.validator.StudentValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class StudentController {
     private final StudentService studentService;
+    private final StudentValidator studentValidator;
 
-    public StudentController(StudentService studentService) {
+    public StudentController(StudentService studentService, StudentValidator studentValidator) {
         this.studentService = studentService;
+        this.studentValidator = studentValidator;
     }
 
+    @PostMapping("/students")
     public ResponseEntity<?> addStudents(@RequestBody List<Student> newStudents) {
-        if (newStudents == null || newStudents.isEmpty()) {
-            return ResponseEntity.badRequest().body("Student list cannot be empty");
-        }
+        List<String> errors = studentValidator.validateList(newStudents);
 
-        for (Student student : newStudents) {
-            if (student.getFirstName() == null || student.getFirstName().isBlank()) {
-                return ResponseEntity.badRequest().body("First name is required");
-            }
-            if (student.getLastName() == null || student.getLastName().isBlank()) {
-                return ResponseEntity.badRequest().body("Last name is required");
-            }
-            if (student.getAge() < 16 || student.getAge() > 100) {
-                return ResponseEntity.badRequest().body("Age must be between 16 and 100");
-            }
+        if (!errors.isEmpty()) {
+            String errorMessage = String.join("; ", errors);
+            return ResponseEntity.badRequest().body(errorMessage);
         }
 
         try {
