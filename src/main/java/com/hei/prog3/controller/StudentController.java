@@ -16,13 +16,29 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @PostMapping("/students")
     public ResponseEntity<?> addStudents(@RequestBody List<Student> newStudents) {
+        if (newStudents == null || newStudents.isEmpty()) {
+            return ResponseEntity.badRequest().body("Student list cannot be empty");
+        }
+
+        for (Student student : newStudents) {
+            if (student.getFirstName() == null || student.getFirstName().isBlank()) {
+                return ResponseEntity.badRequest().body("First name is required");
+            }
+            if (student.getLastName() == null || student.getLastName().isBlank()) {
+                return ResponseEntity.badRequest().body("Last name is required");
+            }
+            if (student.getAge() < 16 || student.getAge() > 100) {
+                return ResponseEntity.badRequest().body("Age must be between 16 and 100");
+            }
+        }
+
         try {
             List<Student> students = studentService.addStudents(newStudents);
             return ResponseEntity.status(HttpStatus.CREATED).body(students);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing the request");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while processing the request");
         }
     }
 
